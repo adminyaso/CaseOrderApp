@@ -36,7 +36,7 @@ namespace CaseAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateProduct(CreateProductDto createProductDto)
         {
             var product = new Product
@@ -53,7 +53,7 @@ namespace CaseAPI.Controllers
         }
 
         [HttpPut("Update")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateProduct(UpdateProductDto updateProductDto)
         {
             var product = await _productRepo.GetByIdAsync(updateProductDto.Id);
@@ -70,7 +70,7 @@ namespace CaseAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _productRepo.GetByIdAsync(id);

@@ -1,6 +1,7 @@
 using CaseAPI.Data;
 using CaseAPI.Models;
 using CaseAPI.Repositories;
+using CaseAPI.Seeders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -103,9 +104,11 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<CaseDbContext>();
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
     try
     {
+        await RoleSeeder.SeedRolesAsync(roleManager);
         await DataSeeder.SeedAsync(context, userManager);
     }
     catch (Exception ex)

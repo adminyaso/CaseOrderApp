@@ -13,7 +13,6 @@ namespace CaseAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class OrderController : ControllerBase
     {
         private readonly IOrderRepository _orderRepo;
@@ -24,8 +23,9 @@ namespace CaseAPI.Controllers
             _orderRepo = orderRepo;
             _context = context;
         }
-
+        
         [HttpGet]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> GetUserOrders()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -56,7 +56,7 @@ namespace CaseAPI.Controllers
 
             return Ok(orderDtos);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("AllOrders")]
         public async Task<IActionResult> GetAllOrders()
         {
@@ -64,7 +64,7 @@ namespace CaseAPI.Controllers
 
             return Ok(orders);
         }
-
+        [Authorize(Roles = "User,Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderById(int id)
         {
@@ -101,7 +101,7 @@ namespace CaseAPI.Controllers
 
             return Ok(orderDto);
         }
-
+        [Authorize(Roles = "User,Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateOrder(CreateOrderDto createOrderDto)
         {
@@ -142,7 +142,7 @@ namespace CaseAPI.Controllers
 
             return Ok(new { message = "Sipariş Başarılıyla Oluşturuldu." });
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("Update")]
         public async Task<IActionResult> UpdateOrder(UpdateOrderDto updateOrderDto)
         {
@@ -160,18 +160,14 @@ namespace CaseAPI.Controllers
                 order.Status = newStatus;
             }
 
-            // Siparişi müşteri iptal edebilir veya admin updateleyeceğinden,
-            // müşteri veya admin OrderItems güncelleyecekse,
-            // stok karışabilir bunun için stokla uyumlu özel mantık eklemek gerekir.
-
             _orderRepo.Update(order);
             await _orderRepo.SaveAsync();
 
             return Ok(new { message = "Güncelleme Başarılı." });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
-        // Siparişi silme işlemini admin panelde yapması mantıklı müşteri update ile iptal edebilir sadece.
         public async Task<IActionResult> DeleteOrder(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

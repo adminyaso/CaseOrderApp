@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -37,12 +38,18 @@ namespace CaseAPI.Controllers
                 return BadRequest(result.Errors);
             }
 
+            var roleResult = await _userManager.AddToRoleAsync(user, "User");
+            if (!roleResult.Succeeded)
+            {
+                return BadRequest(roleResult.Errors);
+            }
+
             return Ok(new { message = "Kayıt Başarılı." });
         }
 
         [HttpGet("claims")]
         // Token kontrolü için
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetClaims()
         {
             return Ok(User.Claims.Select(c => new { c.Type, c.Value }));
@@ -63,17 +70,23 @@ namespace CaseAPI.Controllers
                 return Unauthorized(new { message = "Kullanıcı adı veya şifre yanlış." });
             }
 
-            var token = GenerateJwtToken(user);
+            var token = await GenerateJwtTokenAsync(user);
             return Ok(new AuthResponseDto { Token = token });
         }
 
-        private string GenerateJwtToken(AppUser user)
+        private async Task<string> GenerateJwtTokenAsync(AppUser user)
         {
-            var claims = new[]
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id)
             };
+            // birden fazla rol için.
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -82,7 +95,7 @@ namespace CaseAPI.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1), // Refresh token mekanizması gerektirir.
+                expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
