@@ -1,6 +1,6 @@
 ﻿using CaseAPI.Models;
 
-namespace CaseAPI.Repositories
+namespace CaseAPI.Repositories.Interfaces
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {

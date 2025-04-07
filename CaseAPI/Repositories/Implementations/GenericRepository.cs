@@ -1,8 +1,9 @@
 ﻿using CaseAPI.Data;
+using CaseAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace CaseAPI.Repositories
+namespace CaseAPI.Repositories.Implementations
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {

@@ -1,6 +1,7 @@
 using CaseAPI.Data;
 using CaseAPI.Models;
-using CaseAPI.Repositories;
+using CaseAPI.Repositories.Implementations;
+using CaseAPI.Repositories.Interfaces;
 using CaseAPI.Seeders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

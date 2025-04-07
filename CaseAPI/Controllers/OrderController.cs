@@ -1,6 +1,5 @@
 ﻿using CaseAPI.Dtos.Order;
 using CaseAPI.Models;
-using CaseAPI.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -8,6 +7,7 @@ using System;
 using CaseAPI.Data;
 using CaseAPI.Dtos.Product;
 using Microsoft.AspNetCore.Authorization;
+using CaseAPI.Repositories.Interfaces;
 
 namespace CaseAPI.Controllers
 {

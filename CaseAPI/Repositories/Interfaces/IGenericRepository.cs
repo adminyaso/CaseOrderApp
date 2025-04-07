@@ -1,4 +1,4 @@
-﻿namespace CaseAPI.Repositories
+﻿namespace CaseAPI.Repositories.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {

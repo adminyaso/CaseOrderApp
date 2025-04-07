@@ -1,9 +1,10 @@
 ﻿using CaseAPI.Data;
 using CaseAPI.Models;
+using CaseAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace CaseAPI.Repositories
+namespace CaseAPI.Repositories.Implementations
 {
     public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
