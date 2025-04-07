@@ -1,6 +1,7 @@
 ﻿using CaseAPI.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 namespace CaseAPI.Data
 
 {
@@ -12,28 +13,11 @@ namespace CaseAPI.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CaseDbContext).Assembly);
 
-            // enum'u int olarak saklamak için entity olarak görüyor enum'u ?.
-            builder.Entity<Order>()
-                   .Property(o => o.Status)
-                   .HasConversion<int>();
-
-            builder.Entity<Product>()
-                .Property(p => p.Price)
-                .HasColumnType("decimal(18,2)");
-
-            builder.Entity<Order>()
-                .HasMany(o => o.OrderItems)
-                .WithOne(oi => oi.Order)
-                .HasForeignKey(oi => oi.OrderId);
-
-            builder.Entity<OrderItem>()
-                .HasOne(oi => oi.Product)
-                .WithMany()
-                .HasForeignKey(oi => oi.ProductId);
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
