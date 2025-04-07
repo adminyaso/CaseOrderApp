@@ -38,6 +38,11 @@ public static class DataSeeder
             {
                 throw new Exception("Test user oluşturulamadı: " + string.Join(", ", createResult.Errors.Select(e => e.Description)));
             }
+            var roleResult = await userManager.AddToRoleAsync(testUser, "Admin");
+            if (!roleResult.Succeeded)
+            {
+                throw new Exception($"User rolü verilemedi: {string.Join(", ", values: roleResult.Errors.Select(e => e.Description))}");
+            }
         }
 
             var productList = await context.Products.ToListAsync();

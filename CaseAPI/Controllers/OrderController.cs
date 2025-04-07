@@ -30,6 +30,10 @@ namespace CaseAPI.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var orders = await _orderRepo.GetOrdersByUserAsync(userId);
+            if (orders == null || orders.First().AppUserId != userId)
+            {
+                return NotFound();
+            }
 
             var orderDtos = orders.Select(o => new ResultOrderDto
             {
@@ -166,7 +170,7 @@ namespace CaseAPI.Controllers
             return Ok(new { message = "Güncelleme Başarılı." });
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,User")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
